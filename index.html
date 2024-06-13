@@ -1,0 +1,89 @@
+<!doctype html>
+<html>
+<head>
+    <!-- Recommended meta tags -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!-- PyScript CSS -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.6.1/core.css">
+
+    <script type="module" src="https://pyscript.net/releases/2024.6.1/core.js"></script>
+</head>
+<body>
+<!-- your code goes here... -->
+<script type="py-editor" target="editor">
+    a = 43
+    print(a)
+</script>
+<div id="editor"></div> <!-- will eventually contain the Python editor -->
+<textarea id="transmit"></textarea>
+<script>
+    function setASTData(object){
+        console.log("in js: ",object)
+    }
+</script>
+<script type="py">
+from pyweb import pydom
+import js, ast, pyodide
+
+x = pydom['.py-editor-input'][0].children[1]
+transmit = pydom["#transmit"]
+
+output = ast.parse("a = 1+2+3")
+
+print(ast.dump(output))
+
+def do_change(event):
+    print("change")
+    console.log("change from python")
+
+</script>
+<script>
+
+    ed = document.getElementById("editor")
+    transmit = document.getElementById("transmit")
+
+    var setupObserverConfig = { characterData: false, attributes: false, childList: true, subtree: true };
+
+    const update = ()=>{
+        console.log("update:")
+        eds = document.getElementsByClassName("py-editor-input")[0].children[1].shadowRoot
+        console.log(eds)
+        transmit.innerHTML = eds.textContent+"u";
+    }
+
+    transmit.addEventListener("change",()=>{
+        console.log("change from js")
+    })
+
+
+    const setupCallback = (mutationList, observer) => {
+        for (const mutation of mutationList) {
+            if (mutation.type === "childList") {
+                eds = document.getElementsByClassName("py-editor-input")
+                if(eds.length > 0)
+                {
+                    setupUpdateListener(eds.item(0))
+                    observer.disconnect()
+                }
+            }
+        }
+    };
+
+    const setupUpdateListener = (item) => {
+        var x = item.getElementsByTagName("div")
+        if(x.length > 0)
+        {
+            textareadiv = x[0];
+            textareadiv.addEventListener("keydown",update)
+        }
+    }
+
+    const observer = new MutationObserver(setupCallback);
+    observer.observe(ed, setupObserverConfig);
+
+</script>
+</body>
+</html>
+

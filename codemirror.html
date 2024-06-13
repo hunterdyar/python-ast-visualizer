@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CM</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.6.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.6.1/core.js"></script>
+    <script src="js/codemirror/codemirror.js"></script>
+    <link rel="stylesheet" href="js/codemirror/codemirror.css">
+    <script src="js/codemirror/python/python.js"></script>
+</head>
+<body>
+<div id="editor"></div>
+<script type="py">
+    import js, ast
+    from pyodide.ffi import create_proxy
+
+    def do_change(a,b):
+        print(ast.dump(ast.parse(js.code.doc.getValue('\n'))))
+
+
+    js.code.on("change",create_proxy(do_change))
+
+</script>
+<script>
+    var code = CodeMirror(document.getElementById('editor'));
+    code.on("change",()=>{
+        console.log("change")
+    })
+</script>
+
+</body>
+</html>

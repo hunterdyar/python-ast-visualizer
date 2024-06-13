@@ -8,25 +8,43 @@
     <script src="js/codemirror/codemirror.js"></script>
     <link rel="stylesheet" href="js/codemirror/codemirror.css">
     <script src="js/codemirror/python/python.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
 </head>
 <body>
 <div id="editor"></div>
-<script type="py">
+<div id="chart" style="width:600px;height:250px;"></div>
+
+<script type="py" config="config.toml">
     import js, ast
-    from pyodide.ffi import create_proxy
+    import json
+    from ast2json import ast2json
+    from pyodide.ffi import create_proxy, to_js
 
     def do_change(a,b):
-        print(ast.dump(ast.parse(js.code.doc.getValue('\n'))))
-
+        valid = False
+        try:
+            p = ast2json(ast.parse(js.code.doc.getValue('\n')))
+            valid = True
+        except (SyntaxError,NameError):
+            pass
+        except TypeError:
+            pass
+        finally:
+            if(valid):
+                js.render(p)
 
     js.code.on("change",create_proxy(do_change))
 
 </script>
 <script>
+    var p = document.getElementById("chart");
     var code = CodeMirror(document.getElementById('editor'));
-    code.on("change",()=>{
-        console.log("change")
-    })
+    function render(o){
+        console.log("render")
+        root = o
+        Plotly.newPlot(p,o)
+        console.log(o)
+    }
 </script>
 
 </body>

@@ -1,2 +1,4 @@
+packages = ["ast2json"]
+
 [js_modules.main]
 "rendertree.js" = "rendertree"

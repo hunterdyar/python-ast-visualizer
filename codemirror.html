@@ -8,37 +8,62 @@
     <script src="js/codemirror/codemirror.js"></script>
     <link rel="stylesheet" href="js/codemirror/codemirror.css">
     <script src="js/codemirror/python/python.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.29.2/cytoscape.min.js" charset="utf-8"></script>
+    <style>
+        #chart {
+            width: 300px;
+            height: 300px;
+            display: block;
+        }
+    </style>
 </head>
 <body>
 <div id="editor"></div>
-<div id="chart" style="width:600px;height:250px;"></div>
-
-<script type="py" config="config.toml">
-    import js, ast
-    import json
-    from ast2json import ast2json
-    from pyodide.ffi import create_proxy, to_js
-
-    def do_change(a,b):
-        valid = False
-        try:
-            p = ast2json(ast.parse(js.code.doc.getValue('\n')))
-            valid = True
-        except (SyntaxError,NameError):
-            pass
-        except TypeError:
-            pass
-        finally:
-            if(valid):
-                js.render(p)
-
-    js.code.on("change",create_proxy(do_change))
-
+<div id="chart"></div>
+<script type="py" src="listener.py" config="config.toml"></script>
+<script type="py" src="ast_walker.py" config="config.toml">
 </script>
 <script>
-    var p = document.getElementById("chart");
     var code = CodeMirror(document.getElementById('editor'));
+    var cy = cytoscape({
+        container: document.getElementById("chart"),
+        elements: [
+            { // node a
+                data: { id: 'a' }
+            },
+            { // node b
+                data: { id: 'b' }
+            },
+            { // edge ab
+                data: { id: 'ab', source: 'a', target: 'b' }
+            }
+        ],
+        style: [ // the stylesheet for the graph
+            {
+                selector: 'node',
+                style: {
+                    'background-color': '#666',
+                    'label': 'data(id)'
+                }
+            },
+
+            {
+                selector: 'edge',
+                style: {
+                    'width': 3,
+                    'line-color': '#ccc',
+                    'target-arrow-color': '#ccc',
+                    'target-arrow-shape': 'triangle',
+                    'curve-style': 'bezier'
+                }
+            }
+        ],
+
+        layout: {
+            name: 'grid',
+            rows: 1
+        }
+    })
     function render(o){
         console.log("render")
         root = o

@@ -1,41 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>astviz</title>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.6.1/core.css">
-    <script type="module" src="https://pyscript.net/releases/2024.6.1/core.js"></script>
-    <script src="js/codemirror/codemirror.js"></script>
-    <link rel="stylesheet" href="js/codemirror/codemirror.css">
-    <script src="js/codemirror/python/python.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-
-    <style>
-        #chart {
-            width: 300px;
-            height: 300px;
-            display: block;
-        }
-    </style>
-</head>
-<body>
-<div id="editor"></div>
-<div id="chart"></div>
-<script type="py" src="listener.py" config="config.toml"></script>
-<script src="./playground/data.js"></script>
-
-<script>
-    var code = CodeMirror(document.getElementById('editor'));
-    const container = document.getElementById("chart")
-
-    function render(o){
-        ast = JSON.stringify(o.target)
-        console.log("render",o)
-        container.innerHTML = ""
-        container.append(chart({...o}))
-    }
-
-    function chart(data){
+function chart(data){
     function uid(name) {
         return new Id("O-" + (name == null ? "" : name + "-") + ++count);
     }
@@ -153,7 +116,3 @@
     return svg.node()
 }
 var count = 0;
-</script>
-
-</body>
-</html>

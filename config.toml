@@ -1,6 +1,4 @@
 packages = []
 
 [js_modules.main]
-"rendertree.js" = "rendertree"
-"chart.js" = "chart"
 
